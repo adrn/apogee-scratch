@@ -10,6 +10,7 @@ from schwimmbad import choose_pool
 
 from thejoker import TheJoker, RVData, JokerParams
 from thejoker.log import log as joker_logger
+from hq.sample_prior import make_prior_cache
 
 
 def get_stars_visits(allstar_file, allvisit_file, apogee_ids=None,
@@ -53,8 +54,6 @@ def main(pool):
     # Configuration:
     min_nvisits = 6
     requested_n_samples = 128
-    # prior_samples_file = '/mnt/ceph/users/apricewhelan/projects/hq/cache/P1-32768_prior_samples.hdf5'
-    prior_samples_file = os.path.expanduser('~/.hq/test_prior_samples.hdf5')
     # ------------------------------------------------------------------------
 
     # Load all data:
@@ -119,6 +118,17 @@ def main(pool):
                          jitter_unit=u.m/u.s,
                          poly_trend=2)
     joker = TheJoker(params, pool=pool)
+
+    prior_samples_file = ('cache/P{0}-{1}_prior_samples.hdf5'
+                          .format(params.P_min.to_value(u.day),
+                                  params.P_max.to_value(u.day)))
+    if not os.path.exists(prior_samples_file):
+        n_prior_samples = 2**29
+        print("Prior samples file not found - generating {0} samples..."
+              .format(n_prior_samples))
+        make_prior_cache(prior_samples_file, joker,
+                         nsamples=n_prior_samples)
+        print("...done")
 
     # Loop over stars and generate posterior samplings:
     for apogee_id in stars_r11['APOGEE_ID']:
