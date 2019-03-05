@@ -14,8 +14,8 @@ from thejoker.log import log as joker_logger
 
 def get_stars_visits(allstar_file, allvisit_file, apogee_ids=None,
                      min_nvisits=3):
-    allstars = fits.getdata(allstar_file)
-    allvisits = fits.getdata(allvisit_file)
+    allstars = fits.getdata(os.path.abspath(allstar_file))
+    allvisits = fits.getdata(os.path.abspath(allvisit_file))
 
     if apogee_ids is not None:
         allstars = allstars[np.isin(allstars['APOGEE_ID'], apogee_ids)]
@@ -58,13 +58,13 @@ def main(pool):
     # ------------------------------------------------------------------------
 
     # Load all data:
-    stars_r11, visits_r11 = get_stars_visits('data/allField-r11.fits',
-                                             'data/allFieldVisits-r11.fits',
+    stars_r11, visits_r11 = get_stars_visits('../data/allField-r11.fits',
+                                             '../data/allFieldVisits-r11.fits',
                                              min_nvisits=min_nvisits)
     stars_r11 = stars_r11[stars_r11['RV_LOGG'] <= 3.4]
 
-    stars_r10, visits_r10 = get_stars_visits('data/allStar-r10-l31c-58297.fits',
-                                             'data/allVisit-r10-l31c-58297.fits',
+    stars_r10, visits_r10 = get_stars_visits('../data/allStar-r10-l31c-58297.fits',
+                                             '../data/allVisit-r10-l31c-58297.fits',
                                              apogee_ids=stars_r11['APOGEE_ID'],
                                              min_nvisits=min_nvisits)
 
