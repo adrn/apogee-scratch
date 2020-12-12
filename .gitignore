@@ -3,3 +3,6 @@
 *.jpg
 *.pdf
 *.csv
+*/data/*
+*.pickle
+*.npy
